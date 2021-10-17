@@ -30,6 +30,15 @@ namespace Reactivities_2._0
             {
                 opt.UseSqlite(_config.GetConnectionString("DefaultConnection"));
             });
+
+            //This allow we make calls from another port diff from our BE app
+            services.AddCors(opt =>
+            {
+                opt.AddPolicy("CorsPolicy", policy =>
+                {
+                    policy.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000");
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,6 +55,8 @@ namespace Reactivities_2._0
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseCors("CorsPolicy");
 
             app.UseAuthorization();
 
