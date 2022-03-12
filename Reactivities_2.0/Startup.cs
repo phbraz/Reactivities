@@ -1,9 +1,12 @@
+using Application.Activities;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Reactivities_2._0.Extensions;
+using Reactivities_2._0.Middleware;
 
 namespace Reactivities_2._0
 {
@@ -20,6 +23,10 @@ namespace Reactivities_2._0
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllers().AddFluentValidation(config =>
+            {
+                config.RegisterValidatorsFromAssemblyContaining<Create>();
+            });
             services.AddControllersWithViews();
             services.AddApplicationServices(_config);
             
@@ -29,14 +36,8 @@ namespace Reactivities_2._0
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
+            app.UseMiddleware<ExceptionMiddleware>();
+
             app.UseStaticFiles();
 
             app.UseRouting();
